@@ -1,0 +1,150 @@
+<?php
+
+module_load_include('inc','myweathermodul','weather/myweathermodul.weatherimport');
+
+function myweathermodul_node_info()
+{
+    $contenttypes = array();
+    $contenttypes['myweatherstation'] = array(
+        'name' => t('Wetterstationen'),
+        'base' => 'node_content',
+        'description' => t('Mit Hilfe diesen CTs werden Wetterstationen angelegt'),
+        'has_title' => TRUE,
+        'title_label' => t('MyWetterstations')
+    );
+    return $contenttypes;
+}
+
+function myweathermodul_menu()
+{
+    $items = array();
+    $items['myweathermap/set'] = array(
+        'page callback' => 'drupal_get_form',
+        'description' => 'Formular zum Anlegen einer Wetterstation',
+        'title' => 'Wetterstation anlegen',
+	'access arguments' => array('administer users'),
+        'page arguments' => array('myweathermodul_form'),
+    );
+    $items['admin/config/myweathermodul'] = array(
+        'title' => 'My Weather Modul',
+        'description' => 'Configure the Weatherprovider',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('myweathermodul_configure'),
+        'access arguments' => array('administer myweathermodul settings'),
+    );
+    return $items;
+}
+
+
+function myweathermodul_form($form, &$form_state) 
+{
+    return $form;
+}
+
+
+function myweathermodul_configure()
+{
+    $form = array();
+    $form['introduction'] = array(
+        '#title' => t('Hilfe'),
+        '#type' => 'fieldset',
+        '#collapsible' => false,
+        '#collapsed' => false,        
+    );
+    $form['introduction']['text'] = array(
+        '#type' => 'markup',
+        '#markup' => t('Hier werden die Zugänge für die Wetterprovider gesetzt.<p>'),
+    );
+    $form['introduction']['startbutton'] = array(
+        '#type' => 'submit',
+        '#value' => t('Wetter manuell abholen'),        
+        '#submit' => array('myweathermodul_start'),
+    );    
+    $form['advanced'] = array(
+        '#type' => 'vertical_tabs',
+        '#title' => t('Advanced settings'),
+    );
+    $form['dwd'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('DWD'),
+        '#group' => 'advanced',
+    );
+    $form['dwd']['myweathermodul_dwd_temp'] = array(
+        '#type' => 'textfield',
+        '#title' => t('URL zu den Temperaturdaten'),
+        '#default_value' => variable_get('myweathermodul_dwd_temp'),
+        '#size' => 100,
+        '#maxlength' => 100,
+        '#required' => FALSE,
+    );
+    $form['dwd']['myweathermodul_dwd_rain'] = array(
+        '#type' => 'textfield',
+        '#title' => t('URL zu den Niederschlagsdaten'),
+        '#default_value' => variable_get('myweathermodul_dwd_rain'),
+        '#size' => 100,
+        '#maxlength' => 100,
+        '#required' => FALSE,
+    );
+    $form['ow'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('OpenWeatherMap'),
+        '#group' => 'advanced',
+    );
+    $form['ow']['myweathermodul_ow_url'] = array(
+        '#type' => 'textfield',
+        '#title' => t('URL'),
+        '#default_value' => variable_get('myweathermodul_ow_url'),
+        '#size' => 100,
+        '#maxlength' => 100,
+        '#description' => t("URL der API"),
+        '#required' => FALSE,
+    );
+    $form['ow']['myweathermodul_ow_key'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Key'),
+        '#default_value' => variable_get('myweathermodul_ow_key'),
+        '#size' => 100,
+        '#maxlength' => 100,
+        '#description' => t("URL der API"),
+        '#required' => FALSE,
+    );
+    $form['wwo'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('WorldWideWeather'),
+        '#group' => 'advanced',
+    );
+    $form['wwo']['myweathermodul_wwo_url'] = array(
+        '#type' => 'textfield',
+        '#title' => t('URL'),
+        '#default_value' => variable_get('myweathermodul_wwo_url'),
+        '#size' => 100,
+        '#maxlength' => 100,
+        '#description' => t("URL der API"),
+        '#required' => FALSE,
+    );
+    $form['wwo']['myweathermodul_wwo_key'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Key'),
+        '#default_value' => variable_get('myweathermodul_wwo_key'),
+        '#size' => 100,
+        '#maxlength' => 100,
+        '#description' => t("URL der API"),
+        '#required' => FALSE,
+    );
+    return system_settings_form($form);
+}
+
+function myweathermodul_start()
+{
+    myweathermodul_cron();
+}
+
+function myweathermodul_cron()
+{
+    //alle Nodes herausholen die für DWD von Bedeutung sind
+    //alle Nodes holen die für OW von Bedeutung sind
+    //alle Nodes holen die für WWO von intresse sind
+    drupal_set_message('im Cron');
+    myweathermodul_weatherimport();
+    
+}

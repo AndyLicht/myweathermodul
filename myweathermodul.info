@@ -1,0 +1,9 @@
+name = MyWeatherModul
+description = Verwaltung von Wetterdaten DWD OpenWeatherMap WorldWeatherOnline
+core = 7.x
+package = andylicht
+version = 0.1
+dependencies[] = geofield
+dependencies[] = jquery_update
+dependencies[] = installhelper
+dependencies[] = field_group

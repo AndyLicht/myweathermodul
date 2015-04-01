@@ -1,0 +1,27 @@
+<?php
+/*
+ *    Datei legt alles an was für das Modul benötigt wird
+ */
+module_load_include('inc','myweathermodul','install/myweathermodul.createVariables');
+module_load_include('inc','myweathermodul','install/myweathermodul.createFields');
+module_load_include('inc','myweathermodul','install/myweathermodul.createInstances');
+module_load_include('inc','myweathermodul','install/myweathermodul.createFieldGroups');
+
+function myweathermodul_install()
+{
+    //node_types_rebuild();
+    myweathermodul_install_variables();
+    myweathermodul_installFields();
+    myweathermodul_installInstances();
+    myweathermodul_installFieldGroups();
+    drupal_flush_all_caches();
+}
+
+function myweathermodul_uninstall()
+{
+    myweathermodul_uninstall_variables();
+    myweathermodul_uninstallInstances();
+    myweathermodul_uninstallFields();
+    node_type_delete('myweatherstation');
+    drupal_flush_all_caches();
+}
